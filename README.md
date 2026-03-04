@@ -12,7 +12,9 @@ This project is a small toy implementation of a reactive computation model in Py
 
 The intent was to test reactivity mechanics in plain Python before wiring any real browser/runtime integration.
 
-Important archival note: this code demonstrates server-side/in-process reactivity only. It does not by itself provide browser live updates (no HTTP streaming, websocket push, or client-side reactive runtime).
+Important archival note: `src/main.py` and `src/main2.py` demonstrate server-side/in-process reactivity only.
+
+This repo now also includes `src/server.py`, which adds a minimal browser integration using Server-Sent Events (SSE). It is still a toy, but it closes the transport gap by pushing template updates to connected clients.
 
 ## When this was written
 
@@ -27,3 +29,22 @@ Based on local filesystem metadata from the original workspace:
 
 - `src/main.py`: initial reactive core and arithmetic usage demo
 - `src/main2.py`: refined core plus reactive HTML template/list demo
+- `src/server.py`: reactive core + tiny HTTP server + SSE stream to push updates to the browser
+
+## Run the browser demo
+
+```bash
+python3 src/server.py
+```
+
+Then open:
+
+- `http://127.0.0.1:8000/`
+
+How it works:
+
+- Browser submits state changes to `POST /update`
+- Server mutates base `Reactive` values
+- Computed `page` reactive recomputes
+- Server broadcasts new rendered HTML/state over `GET /events` (SSE)
+- Browser applies updates without refresh
